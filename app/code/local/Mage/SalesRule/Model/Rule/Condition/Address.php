@@ -31,6 +31,7 @@ class Mage_SalesRule_Model_Rule_Condition_Address extends Mage_Rule_Model_Condit
     {
         $attributes = array(
             'base_subtotal' => Mage::helper('salesrule')->__('Subtotal'),
+            'base_subtotal_with_discount' => Mage::helper('salesrule')->__('Subtotal with discount'),
             'total_qty' => Mage::helper('salesrule')->__('Total Items Quantity'),
             'weight' => Mage::helper('salesrule')->__('Total Weight'),
             'payment_method' => Mage::helper('salesrule')->__('Payment Method'),
@@ -56,7 +57,7 @@ class Mage_SalesRule_Model_Rule_Condition_Address extends Mage_Rule_Model_Condit
     public function getInputType()
     {
         switch ($this->getAttribute()) {
-            case 'base_subtotal': case 'weight': case 'total_qty':
+            case 'base_subtotal': case 'base_subtotal_with_discount': case 'weight': case 'total_qty':
                 return 'numeric';
 
             case 'shipping_method': case 'payment_method': case 'country_id': case 'region_id':
@@ -127,6 +128,9 @@ class Mage_SalesRule_Model_Rule_Condition_Address extends Mage_Rule_Model_Condit
         if ('payment_method' == $this->getAttribute() && ! $address->hasPaymentMethod()) {
             $address->setPaymentMethod($object->getQuote()->getPayment()->getMethod());
         }
+
+        $baseTotalWithDiscount = $address->getBaseSubtotal() + $address->getDiscountAmount();
+        $address->setBaseSubtotalWithDiscount($baseTotalWithDiscount);
 
         return parent::validate($address);
     }
